@@ -13,7 +13,7 @@ const MyComponent = ({ name, children, favoriteNumber }) => {
 };
 
 MyComponent.defaultProps = {
-    name: "기본이름",
+    name: "기본 이름",
 };
 
 MyComponent.propTypes = {
