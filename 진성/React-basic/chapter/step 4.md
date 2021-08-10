@@ -63,6 +63,8 @@ class EventPractice extends Component {
 export default EventPractice;
 ```
 
+<br>
+
 여기서 e 객체는 SyntheticEvent로 웹 브라우저 네이티브 이벤트를 감싸는 객체이다. 네이티브 이벤트와 인터페이스가 같으므로 순수 자바스크립트에서 HTML 이벤트를 다룰 때와 똑같이 사용하면 된다.
 <br>
 그러나 이벤트가 끝나고 나면 초기화 되므로 정보를 참조할 수 없다.
