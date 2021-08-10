@@ -69,6 +69,8 @@ class MyComponent extends Component {
 }
 ```
 
+<br>
+
 ---
 
 <br>
