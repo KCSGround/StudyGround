@@ -1,13 +1,11 @@
 import React from "react";
-import Location from "./Location";
 import "./App.css";
+import Weather from "./Weather";
 
 function App() {
     return (
         <div>
-            <h4>
-                <Location />
-            </h4>
+            <Weather />
         </div>
     );
 }

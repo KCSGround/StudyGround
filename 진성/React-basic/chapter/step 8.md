@@ -337,3 +337,212 @@ export default Info;
 useMemo를 사용하면 함수형 컴포넌트 내부에서 발생하는 연산을 최적화할 수 있다.
 
 <br>
+
+Average.js
+
+```js
+import React, { useState, useMemo } from "react";
+
+const getAverage = (numbers) => {
+    console.log("평균값 계산 중..");
+    if (numbers.length === 0) return 0;
+    const sum = numbers.reduce((a, b) => a + b);
+    return sum / numbers.length;
+};
+
+const Average = () => {
+    const [list, setList] = useState([]);
+    const [number, setNumber] = useState("");
+
+    const onChange = (e) => {
+        setNumber(e.target.value);
+    };
+
+    const onInsert = (e) => {
+        const nextList = list.concat(parseInt(number));
+        setList(nextList);
+        setNumber("");
+    };
+
+    const avg = useMemo(() => getAverage(list), [list]); //list 내용이 바뀔 때만 호출
+
+    return (
+        <div>
+            <input value={number} onChange={onChange} />
+            <button onClick={onInsert}>등록</button>
+            <ul>
+                {list.map((value, index) => (
+                    <li key={index}>{value}</li>
+                ))}
+            </ul>
+            <div>
+                <b>평균값</b> {avg}
+            </div>
+        </div>
+    );
+};
+
+export default Average;
+```
+
+<br>
+
+---
+
+## useCallback
+
+usecallback 함수는 렌더링 성능을 최적화해야 하는 상황에서 사용하는데 함수를 재사용할 수 있다.
+
+<br>
+
+Average.js
+
+```js
+const onChange = useCallback((e) => {
+    setNumber(e.target.value);
+}, []); // 컴포넌트가 처음 렌더링될 때만 함수 생성
+
+const onInsert = useCallback(
+    (e) => {
+        const nextList = list.concat(parseInt(number));
+        setList(nextList);
+        setNumber("");
+    },
+    [number, list]
+);
+```
+
+<br>
+
+useCallback의 첫 번째 파라미터에는 생성하고 싶은 함수를 넣고, 두 번째 파라미터에는 배열을 넣는다.
+<br>
+이 배열에는 `어떤 값이 바뀌었을 때 함수를 새로 생성해야 하는지` 명시해야 한다.
+<br>
+<br>
+onChange처럼 비어 있는 배열을 넣게 되면 컴포넌트가 렌더링될 때 만들었던 함수를 계속해서 `재사용`하게 되며, onInsert처럼 배열 안에 number와 list를 넣게 되면 인풋 내용이 바뀌거나 새로운 항목이 추가될 때 새로 만들어진 함수를 사용하게 된다.
+<br>
+<br>
+함수 내부에서 `상태 값에 의존해야 할 때`는 그 값을 반드시 `두 번째 파라미터안에 포함`시켜야 한다. 예를 들어 onChange의 경우 기존의 값을 조회하지 않고 바로 설정만 하기 때문에 배열이 비어있어도 상관없지만, onInsert는 기존의 number와 list를 조회해서 nextList를 생성하기 때문에 배열안에 number와 list를 꼭 넣어주어야 한다.
+
+<br>
+
+---
+
+## useRef
+
+useRef Hook은 함수형 컴포넌트에서 ref를 쉽게 사용할 수 있도록 해준다.
+
+Average 컴포넌트에서 등록 버튼을 눌렀을 때 포커스가 인풋 쪽으로 넘어가도록 설정
+<br>
+<br>
+Average.js
+
+```js
+const Average = () => {
+    const [list, setList] = useState([]);
+    const [number, setNumber] = useState("");
+    const inputEl = useRef(null);
+
+    const onChange = useCallback((e) => {
+        setNumber(e.target.value);
+    }, []); // 컴포넌트가 처음 렌더링될 때만 함수 생성
+
+    const onInsert = useCallback(
+        (e) => {
+            const nextList = list.concat(parseInt(number));
+            setList(nextList);
+            setNumber("");
+            inputEl.current.focus(); //useRef를 사용하여 ref를 설정하면 useRef를 통해 만든 객체 안의 current 값이 실제 엘리먼트를 가르킨다.
+        },
+        [number, list]
+    );
+
+    const avg = useMemo(() => getAverage(list), [list]); //list 내용이 바뀔 때만 호출
+
+    return (
+        <div>
+            <input value={number} onChange={onChange} ref={inputEl} />
+            <button onClick={onInsert}>등록</button>
+            <ul>
+                {list.map((value, index) => (
+                    <li key={index}>{value}</li>
+                ))}
+            </ul>
+            <div>
+                <b>평균값</b> {avg}
+            </div>
+        </div>
+    );
+};
+```
+
+<br>
+
+---
+
+## Custom hooks
+
+<br>
+
+기존의 Info 컴포넌트에서 여러 개의 인풋을 관리하기 위해 useReducer로 작성했던 로직을 useInputs라는 Hook으로 따로 분리한다.
+
+<br>
+
+useInputs.js
+
+```js
+import { useReducer } from "react";
+
+function reducer(state, action) {
+    return {
+        ...state,
+        [action.name]: action.value,
+    };
+}
+
+export default function useInputs(initialForm) {
+    const [state, dispatch] = useReducer(reducer, initialForm);
+    const onChange = (e) => {
+        dispatch(e.target);
+    };
+    return [state, onChange];
+}
+```
+
+Info.js
+
+```js
+import React from "react";
+import useInputs from "./useInputs";
+
+const Info = () => {
+    const [state, onChange] = useInputs({
+        name: "",
+        nickname: "",
+    });
+    const { name, nickname } = state;
+
+    return (
+        <div>
+            <div>
+                <input name="name" value={name} onChange={onChange} />
+                <input name="nickname" value={nickname} onChange={onChange} />
+            </div>
+            <div>
+                <div>
+                    <b>이름:</b> {name}
+                </div>
+                <div>
+                    <b>닉네임:</b> {nickname}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Info;
+```
+
+<br>
+
+---

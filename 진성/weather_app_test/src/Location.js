@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import Weather from "./Weather";
-import Conductor from "./Conductor";
 
 function Location() {
     const [latitude, setLatitude] = useState(0);
@@ -11,9 +9,11 @@ function Location() {
             setLatitude(position.coords.latitude);
             setLongitude(position.coords.longitude);
         });
-    }, [latitude, longitude]);
+    }, []);
 
-    return <Conductor latitude={latitude} longitude={longitude} />;
+    const location = [latitude, longitude];
+
+    return location;
 }
 
 export default Location;
