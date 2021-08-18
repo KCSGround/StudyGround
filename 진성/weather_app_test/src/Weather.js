@@ -5,6 +5,14 @@ import Converter from "./Converter";
 // const WeatherEndpoint = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
 const API_KEY = "ZMRzv1q2%2BYzORg2CS1IZhYglrlF1WoYDe6dzK9UPGDA59kO5GgN2V9NEniLd0bvLIVmgW6WOiooTcUSLX%2FJ16Q%3D%3D";
 
+function today(number) {
+    if (String(number).length < 2) {
+        return (number = "0" + String(number));
+    } else {
+        return number;
+    }
+}
+
 function Weather() {
     /**api items array 
     [0] = tmp 1시간 기온
@@ -17,25 +25,39 @@ function Weather() {
     [7] = POP 강수확률
     [8] = PCP 1시간 강수량
     [9] = REH 습도 */
-    const [data, setData] = useState();
+    const [wdata, setWData] = useState([]);
     const x = Converter().x;
     const y = Converter().y;
-    const getData = async (x, y) => {
-        const {
-            data: {
-                response: { body: items },
-            },
-        } = await axios.get(
-            `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${API_KEY}&dataType=JSON&numOfRows=10&pageNo=1&base_date=20210817&base_time=0500&nx=${x}&ny=${y}`
-        );
-        setData(items);
-    };
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours() - 1;
+    const base_time = `${today(hours)}00`;
 
+    const base_date = `${year}${today(month)}${today(day)}`;
     useEffect(() => {
+        const getData = async (x, y) => {
+            const request = await axios.get(
+                `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${API_KEY}&dataType=JSON&numOfRows=10&pageNo=1&base_date=${base_date}&base_time=${base_time}&nx=${x}&ny=${y}`
+            );
+            setWData(request.data.response.body);
+            return request;
+        };
         getData(x, y);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [x, y]);
-    console.log(data);
-    return <div>rd</div>;
-}
 
+    console.log(wdata);
+    console.log(wdata.items.item[0].category);
+
+    const category = wdata.items.item[0].category;
+    return (
+        <div>
+            <h1>TODAY</h1>
+            <br></br>
+            {category}
+        </div>
+    );
+}
 export default Weather;
