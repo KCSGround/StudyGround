@@ -32,31 +32,38 @@ function Weather() {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    const hours = date.getHours() - 1;
+    const hours = date.getHours() - 2;
     const base_time = `${today(hours)}00`;
 
     const base_date = `${year}${today(month)}${today(day)}`;
     useEffect(() => {
         const getData = async (x, y) => {
-            const request = await axios.get(
+            const {
+                data: {
+                    response: {
+                        body: {
+                            items: { item },
+                        },
+                    },
+                },
+            } = await axios.get(
                 `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${API_KEY}&dataType=JSON&numOfRows=10&pageNo=1&base_date=${base_date}&base_time=${base_time}&nx=${x}&ny=${y}`
             );
-            setWData(request.data.response.body);
-            return request;
+            setWData(item);
         };
         getData(x, y);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [x, y]);
 
-    console.log(wdata);
-    console.log(wdata.items.item[0].category);
+    if (wdata && wdata.length > 0) {
+        console.log(typeof wdata);
+    } else {
+        console.log(typeof wdata);
+    }
 
-    const category = wdata.items.item[0].category;
     return (
         <div>
             <h1>TODAY</h1>
-            <br></br>
-            {category}
         </div>
     );
 }
