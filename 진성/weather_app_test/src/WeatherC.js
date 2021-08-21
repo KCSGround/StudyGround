@@ -47,12 +47,9 @@ class Weather extends Component {
             `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${API_KEY}&dataType=JSON&numOfRows=10&pageNo=1&base_date=20210819&base_time=2000&nx=${x}&ny=${y}`
         );
 
-        this.setState({
-            wdata: item,
-        });
+        this.setState(item[0]);
 
         console.log(this.state);
-        this.getArray();
     };
 
     converter(latitude, longitude) {
@@ -70,11 +67,15 @@ class Weather extends Component {
         });
     }
     render() {
-        // const array_test = this.getArray();
+        const array = this.state;
+
         return (
             <div>
                 <h1>TODAYS</h1>
-                <h2>{JSON.stringify(this.state)}</h2>
+                <h2>{this.state}</h2>
+                {array.map((fcstValue) => {
+                    return <div value={fcstValue}></div>;
+                })}
             </div>
         );
     }
