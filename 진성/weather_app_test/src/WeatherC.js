@@ -73,9 +73,6 @@ class Weather extends Component {
             <div>
                 <h1>TODAYS</h1>
                 <h2>{this.state}</h2>
-                {array.map((fcstValue) => {
-                    return <div value={fcstValue}></div>;
-                })}
             </div>
         );
     }
