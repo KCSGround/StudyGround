@@ -6,7 +6,7 @@ import nConverter from "./nConverter";
 const WeatherEndpoint = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
 const API_KEY = "ZMRzv1q2%2BYzORg2CS1IZhYglrlF1WoYDe6dzK9UPGDA59kO5GgN2V9NEniLd0bvLIVmgW6WOiooTcUSLX%2FJ16Q%3D%3D";
 
-const date = new Date();
+const date = new Date(); //현재 시간 객체
 
 const year = date.getFullYear();
 const month = date.getMonth() + 1;
@@ -14,8 +14,8 @@ const day = date.getDate();
 const hours = date.getHours();
 const minutes = date.getMinutes();
 
-const base_time = `${today(timeChecker()[3])}00`;
-const base_date = `${timeChecker()[0]}${today(timeChecker()[1])}${today(timeChecker()[2])}`;
+const base_time = `${today(timeChecker()[3])}00`; //api에 요청할 때 필요한 시간 조건
+const base_date = `${timeChecker()[0]}${today(timeChecker()[1])}${today(timeChecker()[2])}`; //api에 요청할 때 필요한 연도, 월, 일 조건
 
 // api 갱신시간에 따라 요청하는 basetime, basedate를 변경한다.
 function timeChecker() {

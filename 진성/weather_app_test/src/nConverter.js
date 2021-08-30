@@ -1,3 +1,5 @@
+//기상청 api에서 받은 데이터의 수치를 사용자가 한눈에 인식할 수 있게 해당 수치의 정보를 문자열로 변환한다.
+
 function nConverter(key, value) {
     switch (key) {
         case "PCP": {

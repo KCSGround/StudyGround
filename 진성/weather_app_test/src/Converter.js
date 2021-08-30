@@ -1,4 +1,4 @@
-//@ts-check
+//geolocation에서 받은 현재 좌표를 기상청 격자 좌표로 변환하는 함수
 
 var RE = 6371.00877; // 지구 반경(km)
 var GRID = 5.0; // 격자 간격(km)
@@ -9,7 +9,7 @@ var OLAT = 38.0; // 기준점 위도(degree)
 var XO = 43; // 기준점 X좌표(GRID)
 var YO = 136; // 기1준점 Y좌표(GRID)
 
-// 코드 출저 https://gist.github.com/fronteer-kr/14d7f779d52a21ac2f16
+// 코드 출처 https://gist.github.com/fronteer-kr/14d7f779d52a21ac2f16
 //
 // LCC DFS 좌표변환 ( code : "toXY"(위경도->좌표, v1:위도, v2:경도), "toLL"(좌표->위경도,v1:x, v2:y) )
 //
@@ -66,7 +66,6 @@ function dfs_xy_conv(code, v1, v2) {
     return rs;
 }
 const Converter = (latitude, longitude) => {
-    //접근 방식에서 수정 필요.
     const result = dfs_xy_conv("toXY", latitude, longitude);
 
     return result;
