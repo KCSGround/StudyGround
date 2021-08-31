@@ -2,9 +2,13 @@ import React, { Component } from "react";
 import axios from "axios";
 import Converter from "./Converter";
 import nConverter from "./nConverter";
+import wdata from "./wdata";
 
 const WeatherEndpoint = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
 const API_KEY = "ZMRzv1q2%2BYzORg2CS1IZhYglrlF1WoYDe6dzK9UPGDA59kO5GgN2V9NEniLd0bvLIVmgW6WOiooTcUSLX%2FJ16Q%3D%3D";
+
+let x;
+let y;
 
 const date = new Date(); //현재 시간 객체
 
@@ -186,6 +190,8 @@ class Weather extends Component {
     converter(latitude, longitude) {
         const location = Converter(latitude, longitude);
         this.getData(location.x, location.y);
+        x = location.x;
+        y = location.y;
     }
 
     componentDidMount() {
@@ -230,9 +236,6 @@ class Weather extends Component {
     }
 
     render() {
-        console.log(base_time);
-        console.log(base_date);
-
         let result;
         //렌더링부분의 리턴값에 들어가는 props에 실제 데이터가 들어가기까지 딜레이가 걸리므로 그 전에 렌더링할 초기값을 설정.
         if (this.make() != null) {
@@ -250,6 +253,19 @@ class Weather extends Component {
                 reh: "null",
             };
 
+        let arr = [];
+
+        Object.keys(wdata.location).map(function (index) {
+            if (x === wdata.location[index]["격자 X"] && y === wdata.location[index]["격자 Y"]) {
+                arr.push({
+                    Province: wdata.location[index]["1단계"],
+                    City: wdata.location[index]["2단계"],
+                    Town: wdata.location[index]["3단계"],
+                });
+            }
+            return arr;
+        });
+
         return (
             <div>
                 <h1>TODAYS</h1>
@@ -261,6 +277,7 @@ class Weather extends Component {
                 <h2>강수 확률 : {result.pop}%</h2>
                 <h2>시간 당 강수량 : {result.pcp}</h2>
                 <h2>습도 : {result.reh}%</h2>
+                <h2>{arr != null ? arr[0].Province : "null"}</h2>
             </div>
         );
     }
