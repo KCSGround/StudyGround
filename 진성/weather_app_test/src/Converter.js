@@ -66,6 +66,7 @@ function dfs_xy_conv(code, v1, v2) {
     return rs;
 }
 const Converter = (latitude, longitude) => {
+    console.log("finish");
     const result = dfs_xy_conv("toXY", latitude, longitude);
 
     return result;
