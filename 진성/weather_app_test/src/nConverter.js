@@ -21,7 +21,7 @@ function nConverter(key, value) {
 
         case "SKY": {
             if (value === "1") return "맑음";
-            else if (value === "2") return "구름 많음";
+            else if (value === "3") return "구름 많음";
             else if (value === "4") return "흐림";
 
             break;

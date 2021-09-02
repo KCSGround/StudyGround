@@ -159,8 +159,20 @@ function today(number) {
 }
 
 function Weather() {
-    const [tdata, setTdata] = useState([]);
-    const [loading, setLoading] = useState();
+    const [tdata, setTdata] = useState();
+    const [
+        data = {
+            baseTime: "null",
+            TMP: "null",
+            WSD: "null",
+            SKY: "null",
+            PTY: "null",
+            POP: "null",
+            PCP: "null",
+            REH: "null",
+        },
+        setData,
+    ] = useState();
 
     /**api items array 
     [0] = tmp 1시간 기온
@@ -175,6 +187,7 @@ function Weather() {
     [9] = REH 습도 */
 
     const getData = async (x, y) => {
+        console.log("getData");
         const {
             data: {
                 response: {
@@ -186,8 +199,6 @@ function Weather() {
         } = await axios.get(`${WeatherEndpoint}?serviceKey=${API_KEY}&dataType=JSON&numOfRows=10&pageNo=1&base_date=${base_date}&base_time=${base_time}&nx=${x}&ny=${y}`);
 
         setTdata(item);
-
-        console.log(tdata);
     };
 
     // 격자 좌표를 받아 API를 호출하여 해당 시간의 데이터를 받는다.
@@ -206,10 +217,10 @@ function Weather() {
         });
         console.log("mounted");
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [Converter]);
+    }, []);
 
     //state의 데이터가 arr에 들어오기까지 기다리고 데이터를 추출한다.
-    const make = () => {
+    function make() {
         if (tdata != null) {
             //state의 obj arr에서 원하는 데이터 추출
             const data = {
@@ -236,25 +247,21 @@ function Weather() {
             };
 
             return result;
-        }
-    };
+        } else {
+            const result = {
+                baseTime: "null",
+                tmp: "null",
+                wsd: "null",
+                sky: "null",
+                pty: "null",
+                pop: "null",
+                pcp: "null",
+                reh: "null",
+            };
 
-    let result;
-    // //렌더링부분의 리턴값에 들어가는 props에 실제 데이터가 들어가기까지 딜레이가 걸리므로 그 전에 렌더링할 초기값을 설정.
-    if (make() != null) {
-        result = make();
-        console.log(result);
-    } else
-        result = {
-            baseTime: "null",
-            tmp: "null",
-            wsd: "null",
-            sky: "null",
-            pty: "null",
-            pop: "null",
-            pcp: "null",
-            reh: "null",
-        };
+            return result;
+        }
+    }
 
     let arr = [];
 
@@ -269,17 +276,34 @@ function Weather() {
         return arr;
     });
 
+    useEffect(() => {
+        if (tdata != null) {
+            setData({
+                baseTime: tdata[0].baseTime, //현재 시간
+                TMP: tdata[0].fcstValue, // 기온s
+                WSD: tdata[4].fcstValue, // 풍속
+                SKY: tdata[5].fcstValue, // 하늘 상태
+                PTY: tdata[6].fcstValue, //  기후 상태
+                POP: tdata[7].fcstValue, // 강수 확률
+                PCP: tdata[8].fcstValue, // 시간당 강수량
+                REH: tdata[9].fcstValue, // 습도
+            });
+        }
+        console.log(data);
+    }, [setTdata]);
+
     return (
         <div>
-            {/* <h1>TODAYS</h1>
-            <h2>업데이트 시간 : {result.baseTime}</h2>
-            <h2>기온 : {result.tmp}도</h2>
-            <h2>풍속 : {result.wsd}m/s</h2>
-            <h2>기후 상태 : {result.pty}</h2>
-            <h2>하늘 상태 : {result.sky}</h2>
-            <h2>강수 확률 : {result.pop}%</h2>
-            <h2>시간 당 강수량 : {result.pcp}</h2>
-            <h2>습도 : {result.reh}%</h2> */}
+            <h1>TODAYS</h1>
+            <h2>업데이트 시간 : {make().baseTime}</h2>
+            <h2>기온 : {make().tmp}도</h2>
+            <h2>풍속 : {make().wsd}m/s</h2>
+            <h2>기후 상태 : {make().pty}</h2>
+            <h2>하늘 상태 : {make().sky}</h2>
+            <h2>강수 확률 : {make().pop}%</h2>
+            <h2>시간 당 강수량 : {make().pcp}</h2>
+            <h2>습도 : {make().reh}%</h2>
+            {data.baseTime}
         </div>
     );
 }
